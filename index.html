@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Model Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script type="module"
+    src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js">
+  </script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: white;
+    }
+
+    model-viewer {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    /* ===== LOGO ===== */
+    .left-logo {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 30;
+    }
+
+    .left-logo img {
+      width: 90px;
+    }
+
+    /* ===== RIGHT UI ===== */
+    .ui-panel {
+      position: fixed;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      z-index: 20;
+      pointer-events: auto;
+    }
+
+    .section {
+      padding: 12px;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+
+    .pink { background: #ff5ca8; }
+    .blue { background: #5bb6ff; }
+    .yellow { background: #ffd84d; }
+
+    .title {
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .section button {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* ===== HOTSPOTS ===== */
+    .Hotspot {
+      width: 14px;
+      height: 14px;
+      background: white;
+      border: 2px solid black;
+      border-radius: 50%;
+      pointer-events: auto;
+    }
+
+    .HotspotAnnotation {
+      position: absolute;
+      bottom: 150%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.75);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      visibility: hidden;
+    }
+
+    .Hotspot.hovered .HotspotAnnotation {
+      visibility: visible;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- LOGO -->
+<div class="left-logo">
+  <img src="smiggle-logo.png" alt="Logo">
+</div>
+
+<model-viewer
+  id="viewer"
+  src="FINAL dve a2.glb"
+  camera-controls
+  auto-rotate
+  shadow-intensity="1">
+
+<!-- HOTSPOT 1: Handle -->
+<button class="Hotspot" slot="hotspot-1" 
+        data-surface="1 0 2717 2683 2684 0.211 0.786 0.003" 
+        data-visibility-attribute="visible">
+  <div class="HotspotAnnotation">Handle</div>
+</button>
+
+  <button class="Hotspot" slot="hotspot-2" data-surface="3 0 1188 411 1190 0.052 0.446 0.502" data-visibility-attribute="visible">
+    <div class="HotspotAnnotation">Hologram Dome</div>
+  </button>
+
+  <button class="Hotspot" slot="hotspot-3" data-surface="4 0 1181 1172 1180 0.345 0.078 0.577" data-visibility-attribute="visible">
+    <div class="HotspotAnnotation">Charging Port</div>
+  </button>
+
+  <button class="Hotspot" slot="hotspot-4" data-surface="0 0 899 926 917 0.232 0.584 0.184" data-visibility-attribute="visible">
+    <div class="HotspotAnnotation">Screen</div>
+  </button>
+
+  <button class="Hotspot" slot="hotspot-5" data-surface="0 0 1206 1189 1205 0.023 0.007 0.970" data-visibility-attribute="visible">
+    <div class="HotspotAnnotation">Base</div>
+  </button>
+
+  <!-- UI PANEL -->
+  <div class="ui-panel">
+
+    <div class="section pink">
+      <div class="title">Variants</div>
+      <button onclick="setVariant('Pink/ Green')">Pink / Green</button>
+      <button onclick="setVariant('Blue/ Yellow')">Blue / Yellow</button>
+      <button onclick="setVariant('Purple/Orange')">Purple / Orange</button>
+    </div>
+
+    <div class="section blue">
+      <div class="title">Position</div>
+      <button onclick="orbit('0deg 100.8deg 0.6222m')">Front</button>
+      <button onclick="orbit('90deg 75deg 0.6m')">Side</button>
+      <button onclick="orbit('0deg 0deg 0.6m')">Top</button>
+      <button onclick="orbit('0deg 180deg 0.6m')">Bottom</button>
+      <button onclick="orbit('0deg 75deg 0.6222m')">Perspective</button>
+    </div>
+
+    <div class="section yellow">
+      <div class="title">Animation</div>
+      <button onclick="playAnim('Rotate')">Rotate</button>
+      <button onclick="playAnim('Explode')">Explode</button>
+      <button onclick="playAnim('Parts')">Parts</button>
+      <button onclick="pauseAnim()">Pause</button>
+    </div>
+
+  </div>
+
+</model-viewer>
+
+<script>
+  const viewer = document.getElementById('viewer');
+  const hotspots = document.querySelectorAll('.Hotspot');
+
+  // Hotspot hover effect
+  hotspots.forEach(hs => {
+    hs.addEventListener('mouseenter', () => hs.classList.add('hovered'));
+    hs.addEventListener('mouseleave', () => hs.classList.remove('hovered'));
+  });
+
+  // Variant switching
+  function setVariant(name) {
+    viewer.variantName = name;
+  }
+
+  // Camera positions
+  function orbit(o) {
+    viewer.cameraOrbit = o;
+  }
+
+  // Animation controls
+  function playAnim(name) {
+    viewer.pause();
+    viewer.animationName = name;
+    viewer.play();
+  }
+
+  function pauseAnim() {
+    viewer.pause();
+  }
+</script>
+
+</body>
+</html>
